@@ -1,0 +1,20 @@
+body {color: #363636;}
+
+.btn-primary { border-radius: 30px; font-size: 20px;  }
+
+.btn-outline-primary { border-radius: 30px; font-size: 20px;  }
+
+.sbc {align-content: center;}
+
+
+footer {color: #343a40; padding-top: 8px; font-size: 14px;}
+
+.formu {padding-top: 30px; padding-bottom: 20px; padding-left: 30px; padding-right: 30px; }
+
+.altura {min-height: 685px; text-align: center; padding-top: 130px;}
+
+input[type="radio"] {
+    -ms-transform: scale(1.5); /* IE 9 */
+    -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+    transform: scale(1.5);
+}
