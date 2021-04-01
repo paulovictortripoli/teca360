@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link REL="ICON" HREF="http://imagens.cardiol.br/cientifico/icon_sbc_.png">
+    <title>TECA 360 - Sociedade Brasileira de Cardiologia</title>
+    <!-- Bootstrap  -->
+    <!--<link href="css/bootstrap-4.3.1.css" rel="stylesheet">-->
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+	
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="css/bootstrapValidator.css" />
+    <!-- Include the FontAwesome CSS if you want to use feedback icons provided by FontAwesome -->
+    <!--<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />-->
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrapValidator.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="js/jquery-2.1.4.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    
+    <script type="text/javascript">
+		$(document).ready(function() {
+			
+			$("#bt_acesso").click(function (event)
+			{
+				var email = $("#txtemail").val();
+				var senha = $("#txtsenha").val();
+				var vemail = null;
+				
+				inscricaoEncontrada = 0;
+				vdescricaoStatusIncricao = null;
+				vnomeInscrito = null;
+				vemailInscrito = null;
+				videvento = null;
+				
+				//var idevento = $("#idevento").val();
+				
+				//var idevento = 1554;
+				
+				if (email === '') {
+					swal({
+						title: "Favor informar o E-mail",
+						//text: "You clicked the button!",
+						icon: "warning",
+						button: "Voltar",
+					});
+					document.getElementById("txtemail").focus();
+					event.preventDefault();
+					
+				}
+				else if (ValidarEmail(email) === false)
+				{
+					swal({
+						title: "E-mail Inválido",
+						//text: "You clicked the button!",
+						icon: "error",
+						button: "Voltar",
+					});
+					
+					document.getElementById("txtemail").focus();
+					event.preventDefault();
+				}
+				else if (senha === '')
+				{
+					swal({
+						title: "Você precisa digitar uma senha.",
+						icon: "error",
+						button: "Voltar",
+					});
+					
+					document.getElementById("txtsenha").focus();
+					event.preventDefault();
+				}
+				else
+				{
+					////////////////////////////////////////////////////////////////////////////////////////
+					var settings = {
+						"url": "https://app.associatec.com.br/Api/Permissao/Login",
+						"method": "POST",
+						"timeout": 0,
+						"headers": {
+							"Content-Type": "application/json",
+							"Authorization": "Basic 1912179851"
+						},
+						"data": JSON.stringify({"login": $("#txtemail").val() ,"senha": $("#txtsenha").val()}),
+					};
+					
+					
+					var jqxhr = $.ajax(settings)
+					.done(function (responseLogin)
+					{
+						console.log("success");
+						console.log(responseLogin.totalRegistros);
+						console.log(responseLogin.listaResultados);
+						console.log(responseLogin.listaResultados['email']);
+						vemail = responseLogin.listaResultados['email'];
+						
+						
+						
+						
+						if (responseLogin.listaResultados === null && responseLogin.totalRegistros === 0 )
+						{
+							console.log("Usuário ou senha errado");
+							swal({
+								title: "Usuário ou senha errado,favor verificar!",
+								icon: "error",
+								button: "Voltar",
+							});
+							
+							document.getElementById("txtsenha").focus();
+							event.preventDefault();
+							
+						}
+						else          
+						{
+							var arrayEventos = [ 1635,1677,1554,1581 ];
+							var tamanho = arrayEventos.length;
+							
+							$.each( arrayEventos,function( key, idEvento ) 
+							{
+								console.log("Teste -" + idEvento);
+								try {
+								var settings = {		 
+									"url": "https://app.associatec.com.br/Api/EventosPro/AcessoInscricao/",
+									"method": "POST",
+									"async": "false",
+									"timeout": 0,
+									"headers": {
+										"Content-Type": "application/json",
+										"Authorization": "Basic 9876524134"
+									},
+									"data": JSON.stringify({"login": vemail ,"idEvento": idEvento}),
+								};
+								
+								var xhrEvento;
+								if (xhrEvento != null){ 
+									xhrEvento.abort();
+									xhrEvento = null;
+								}
+								
+								
+								xhrEvento = $.ajax(settings)
+								.success(function (response)
+								{
+									
+									
+									console.log("success");
+									
+									console.log(response.listaResultados);
+									console.log(response.listaResultados[0].idEvento);
+									console.log("Contador do array " + key);
+									console.log(response.listaResultados[0].descricaoStatusIncricao);
+									console.log(response.listaResultados[0].nomeInscrito);
+									console.log(response.listaResultados[0].emailInscrito);
+									alert(jqxhr.status);
+									alert(key);
+									alert(tamanho - 1);
+									
+									if (xhrEvento.status == 200)
+									{
+										inscricaoEncontrada = 1;
+										if (inscricaoEncontrada == 1)
+										{
+											
+											alert("bla");
+											vdescricaoStatusIncricao = response.listaResultados[0].descricaoStatusIncricao;
+											vnomeInscrito = response.listaResultados[0].nomeInscrito;
+											vemailInscrito = response.listaResultados[0].emailInscrito;	
+											
+											
+										
+										
+									}
+									
+									}
+									alert("após o sucess")
+									alert(inscricaoEncontrada)
+								});
+								} catch(e) {
+												alert("You messed something up!");
+								}
+									
+								
+							});
+						}
+					});
+						
+				}
+				
+					function ValidarEmail(email) 
+					{
+						var emailPattern =  /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+						return emailPattern.test(email); 
+					}
+			});
+		});
+		</script>
+		
+	</head>
+	<body>
+		<div class="container text-center">
+			<br>
+			<div class="sbc"><img src="images/logo_sbc.png" class="img-fluid" alt="" /></div>
+		</div>
+		
+		<header>
+			<form action="acesso360.asp" id="form_login"  method="post" >
+				<div class="container">
+					<br>
+					<div class="text-center"><h2><strong>ACESSO CURSO TECA 360 - MÓDULO DIGITAL</strong></h2></div><br><br>
+					<div class="row">
+						<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="col-sm-12 col-md-12 text-center">
+							<h3>Informe abaixo o seu e-mail cadastrado no Curso para acessar a plataforma do Curso Teca 360:</h3><br>
+						</div> <br>
+						<div class="col-sm-12">
+							<br>
+							<div class="form-group row">
+								<label for="inputPassword3" class="col-sm-4 col-form-label">E-mail (seuemail@seusite.com.br):</label>
+								<div class="col-sm-12">
+									<input autofocus class="form___data" id="txtemail"  name="txtemail" size="50" placeholder="Digite seu e-mail aqui" type="text" >
+									<input type="hidden" id="idevento" name="idevento" value="1554">
+									<br>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label for="inputPassword3" class="col-sm-4 col-form-label">Senha (Sua senha cadastrada no Portal SBC):</label>
+								<div class="col-sm-12">
+									<input autofocus class="form___data" id="txtsenha"  name="txtsenha" size="50" placeholder="Digite sua senha aqui" type="password" >
+								</div>
+							</div>
+							<br>
+							<input  class="btn btn-primary" name="bt_acesso" id="bt_acesso" value="Entrar" />
+							<br />
+							<br />
+							<!-- <h5>Esqueceu sua senha, entre no link <a href="https://sistemasbc.cardiol.br/areaAssociados/" target="_blank">https://sistemasbc.cardiol.br/areaAssociados/</a> e clique em "Recuperar minha senha"</h5><br> -->
+						</div>
+					
+					</div>
+					</div>
+					</div>
+					</div>
+					</form>
+					</header>
+					
+					<br><br>
+					<hr>
+					<footer class="text-center">
+					
+					<p>Sociedade Brasileira de Cardiologia  <br>tecnologia@cardiol.br</p>
+					
+					</footer>
+					</body>
+					</html>										
